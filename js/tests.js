@@ -279,7 +279,7 @@
 
     const rows = list.map(function (entry, idx) {
       const def = getCaseById(entry.id || entry.caseId) || {};
-      const statusRaw = String(entry.autoStatus || entry.status || 'unknown').toLowerCase();
+      const statusRaw = String(entry.autoStatus || entry.status || 'unknown').trim().toLowerCase();
       if (statusRaw === 'pass') passCount++;
       else if (statusRaw === 'warn') warnCount++;
       else if (statusRaw === 'fail') failCount++;
