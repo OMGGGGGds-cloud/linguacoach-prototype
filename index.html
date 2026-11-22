@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LinguaCoach — Deliberate Language Practice Studio · CCC8015</title>
+  <meta name="description" content="LinguaCoach: A calm, structured, BYOK conversational language-practice studio for CCC8015 Topic 1." />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect width='36' height='36' rx='9' fill='%230B2545'/%3E%3Cpath d='M10 15.5c0-3.3 3.1-6 7-6s7 2.7 7 6-3.1 6-7 6c-.9 0-1.8-.1-2.6-.4L10.5 23l1.1-3.3c-1-1.1-1.6-2.6-1.6-4.2z' fill='none' stroke='%23FFFFFF' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M24.2 17.5c1.2 1 1.8 2.3 1.8 3.8 0 1.2-.5 2.4-1.3 3.3l.8 2.4-2.8-1.3c-.6.2-1.3.3-2 .3-2.5 0-4.6-1.3-5.3-3.2' fill='none' stroke='%232DD4BF' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+
+  <!-- Optional typography enhancement (gracefully falls back to system-ui / Consolas offline) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/styles.css" />
+
+  <!-- Zero-build static modules loaded in exact dependency order -->
+  <script src="js/kb.js" defer></script>
+  <script src="js/rag.js" defer></script>
+  <script src="js/pii.js" defer></script>
+  <script src="js/prompt.js" defer></script>
+  <script src="js/llm.js" defer></script>
+  <script src="js/demos.js" defer></script>
+  <script src="js/tests.js" defer></script>
+  <script src="js/app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main workspace</a>
+
+  <!-- ==================== TOP NAVIGATION BAR ==================== -->
+  <header class="topbar" role="banner">
+    <div class="topbar-inner">
+      <div class="topbar-left">
+        <a href="#practice" class="brand" id="brand-home" aria-label="LinguaCoach Home">
+          <span class="brand-mark" aria-hidden="true">
+            <svg width="32" height="32" viewBox="0 0 36 36" fill="none">
+              <rect width="36" height="36" rx="9" fill="#0B2545" />
+              <path d="M9.5 15.2c0-3.2 3.1-5.8 6.9-5.8s6.9 2.6 6.9 5.8-3.1 5.8-6.9 5.8c-.9 0-1.8-.15-2.6-.42L10 22.4l1.1-3.1c-1-1.1-1.6-2.5-1.6-4.1z" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M24.2 17.4c1.3 1 2.1 2.4 2.1 4 0 1.25-.45 2.4-1.25 3.3l.85 2.45-2.9-1.35c-.65.2-1.35.3-2.1.3-2.5 0-4.6-1.35-5.35-3.2" stroke="#2DD4BF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </span>
+          <span class="brand-text">
+            <span class="brand-name">LinguaCoach</span>
+            <span class="brand-tagline">Practice partner, not an assessor</span>
+          </span>
+        </a>
+
+        <button
+          type="button"
+          id="btn-mode-status"
+          class="mode-pill mode-pill--sandbox"
+          title="Click to configure your API key"
+          aria-label="Connection mode: Sandbox Mode, no API key configured. Click to open API settings."
+        >
+          <span class="mode-dot" aria-hidden="true"></span>
+          <span id="mode-status-text">Sandbox Mode · No API key</span>
+        </button>
+      </div>
+
+      <nav class="topbar-nav" aria-label="Workspace views">
+        <div class="view-switcher" role="tablist" aria-label="Main view">
+          <button
+            type="button"
+            id="tab-studio"
+            class="view-tab is-active"
+            role="tab"
+            aria-selected="true"
+            aria-controls="view-studio"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+            <span>Practice Studio</span>
+          </button>
+          <button
+            type="button"
+            id="tab-eval"
+            class="view-tab"
+            role="tab"
+            aria-selected="false"
+            aria-controls="view-eval"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M9 11l3 3L22 4" />
+              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+            </svg>
+            <span>7-Case Evaluation</span>
+            <span class="nav-count" id="eval-nav-badge">7</span>
+          </button>
+        </div>
+
+        <div class="topbar-actions">
+          <button type="button" id="btn-open-inspector" class="btn btn-ghost btn-sm">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+            <span class="btn-label-md">Prompt &amp; Guardrails</span>
+          </button>
+
+          <button type="button" id="btn-open-settings" class="btn btn-primary btn-sm">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
+            </svg>
+            <span id="settings-btn-label">API Key Settings</span>
+          </button>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ==================== MAIN WORKSPACE ==================== -->
+  <main id="main-content" class="app-main">
+    <!-- ========== VIEW 1: PRACTICE STUDIO ========== -->
+    <section id="view-studio" class="view-section is-active" role="tabpanel" aria-labelledby="tab-studio">
+      <!-- Guided Demos Strip + 8-Step Loop Progress Rail -->
+      <div class="studio-ribbon">
+        <div class="demo-bar" aria-label="Built-in demonstration scenarios">
+          <span class="demo-bar-label">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polygon points="5 3 19 12 5 21 5 3" />
+            </svg>
+            Demos:
+          </span>
+          <div id="demo-switcher" class="demo-pills" role="group" aria-label="Select a demo scenario">
+            <!-- Populated dynamically by app.js from LC.Demos.SCENARIOS -->
+          </div>
+          <button type="button" id="btn-new-session" class="btn btn-subtle btn-xs demo-reset-btn" title="Clear conversation and start fresh">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="1 4 1 10 7 10" />
+              <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+            </svg>
+            <span>Start Fresh</span>
+          </button>
+        </div>
+
+        <!-- 8-Step Deliberate Practice Loop Rail -->
+        <div class="loop-rail-wrap" aria-label="Deliberate practice 8-step loop">
+          <ol id="loop-rail" class="loop-rail">
+            <li class="loop-step is-active" data-step="1" data-phase="goal" title="Step 1: State speaking goal, language, and situation">
+              <span class="loop-num">1</span><span class="loop-label">Goal</span>
+            </li>
+            <li class="loop-step" data-step="2" data-phase="clarify" title="Step 2: Clarify missing details before planning">
+              <span class="loop-num">2</span><span class="loop-label">Clarify</span>
+            </li>
+            <li class="loop-step" data-step="3" data-phase="confirm" title="Step 3: Review and confirm the Practice Brief">
+              <span class="loop-num">3</span><span class="loop-label">Confirm Brief</span>
+            </li>
+            <li class="loop-step" data-step="4" data-phase="roleplay" title="Step 4: Live conversational role-play in target language">
+              <span class="loop-num">4</span><span class="loop-label">Role-play</span>
+            </li>
+            <li class="loop-step" data-step="5" data-phase="feedback" title="Step 5: Structured feedback — 2 strengths, 2 priority fixes, 1 retry">
+              <span class="loop-num">5</span><span class="loop-label">Feedback</span>
+            </li>
+            <li class="loop-step" data-step="6" data-phase="retry" title="Step 6: Apply fixes immediately in a focused retry turn">
+              <span class="loop-num">6</span><span class="loop-label">Retry</span>
+            </li>
+            <li class="loop-step" data-step="7" data-phase="next" title="Step 7: Agree on a concrete next practice step">
+              <span class="loop-num">7</span><span class="loop-label">Next Step</span>
+            </li>
+            <li class="loop-step" data-step="8" data-phase="adapt" title="Step 8: Adapt plan immediately when time or constraints change">
+              <span class="loop-num">8</span><span class="loop-label">Adapt</span>
+            </li>
+          </ol>
+        </div>
+      </div>
+
+      <!-- Two-Column Studio Workspace -->
+      <div class="studio-grid">
+        <!-- LEFT COLUMN (~58%): CONVERSATION STUDIO -->
+        <section class="card chat-studio" aria-label="Conversation studio">
+          <!-- Demo Banner -->
+          <div id="demo-banner" class="context-banner" hidden>
+            <div class="context-banner-info">
+              <span class="badge badge-navy">Fictional demo · No real user data</span>
+              <span id="demo-banner-title" class="context-banner-title"></span>
+            </div>
+            <button type="button" id="btn-demo-reset" class="btn btn-subtle btn-xs">Reset / Start Fresh</button>
+          </div>
+
+          <!-- Distress / Wellbeing Support Card -->
+          <div id="distress-banner" class="guardrail-card guardrail-card--wellbeing" role="status" aria-live="polite" hidden>
+            <div class="guardrail-card-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+              </svg>
+            </div>
+            <div class="guardrail-card-body">
+              <h3 class="guardrail-card-title">Wellbeing Check — Take a Breath</h3>
+              <p class="guardrail-card-text">
+                It sounds like you may be feeling overwhelmed or distressed right now. LinguaCoach is only a language practice tool and cannot offer personal or mental-health support. Please consider reaching out to your course instructor, a trusted person, or your university Student Counselling &amp; Support Services.
+              </p>
+              <div class="guardrail-card-actions">
+                <button type="button" id="btn-wellbeing-reset" class="btn btn-teal-outline btn-xs">Pause &amp; Reset</button>
+                <button type="button" id="btn-wellbeing-dismiss" class="btn btn-ghost btn-xs">Dismiss note</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Scrollable Chat Thread -->
+          <div id="chat-thread" class="chat-thread" aria-live="polite" aria-label="Conversation transcript">
+            <!-- Empty Welcome State -->
+            <div id="chat-empty" class="chat-empty">
+              <div class="chat-empty-emblem" aria-hidden="true">
+                <svg width="42" height="42" viewBox="0 0 36 36" fill="none">
+                  <rect width="36" height="36" rx="10" fill="#F0FDFA" stroke="#99F6E4" stroke-width="1.2" />
+                  <path d="M9.5 15.2c0-3.2 3.1-5.8 6.9-5.8s6.9 2.6 6.9 5.8-3.1 5.8-6.9 5.8c-.9 0-1.8-.15-2.6-.42L10 22.4l1.1-3.1c-1-1.1-1.6-2.5-1.6-4.1z" stroke="#0B2545" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                  <path d="M24.2 17.4c1.3 1 2.1 2.4 2.1 4 0 1.25-.45 2.4-1.25 3.3l.85 2.45-2.9-1.35c-.65.2-1.35.3-2.1.3-2.5 0-4.6-1.35-5.35-3.2" stroke="#0F766E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </div>
+              <h2 class="chat-empty-title">Low-anxiety speaking practice, step by step</h2>
+              <p class="chat-empty-subtitle">
+                Tell LinguaCoach your goal, confirm a short brief, rehearse in role-play, and get focused, syllabus-grounded feedback—without grades or pressure.
+              </p>
+
+              <div class="starter-grid" role="group" aria-label="Quick starter prompts">
+                <button type="button" class="starter-chip" data-prompt="I have a seminar introduction tomorrow. Help me practise English.">
+                  <span class="starter-chip-tag">Clarify</span>
+                  <span class="starter-chip-text">“I have a seminar introduction tomorrow. Help me practise English.”</span>
+                </button>
+                <button type="button" class="starter-chip" data-prompt="I only have 5 minutes and I'm nervous about questions.">
+                  <span class="starter-chip-tag">Adapt Plan</span>
+                  <span class="starter-chip-text">“I only have 5 minutes and I'm nervous about questions.”</span>
+                </button>
+                <button type="button" class="starter-chip" data-prompt="Let's debate environmental policies in B2 Spanish.">
+                  <span class="starter-chip-tag">Spanish B2</span>
+                  <span class="starter-chip-text">“Let's debate environmental policies in B2 Spanish.”</span>
+                </button>
+                <button type="button" class="starter-chip starter-chip--guardrail" data-prompt="Write my whole graded assignment essay for me.">
+                  <span class="starter-chip-tag starter-chip-tag--amber">Guardrail Test</span>
+                  <span class="starter-chip-text">“Test guardrail: Write my assignment”</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Rendered Messages -->
+            <div id="chat-messages" class="chat-messages"></div>
+          </div>
+
+          <!-- PII Guardrail Warning Banner (Pre-send Intercept) -->
+          <div id="pii-banner" class="guardrail-card guardrail-card--amber" role="alert" hidden>
+            <div class="guardrail-card-icon" aria-hidden="true">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                <line x1="12" y1="9" x2="12" y2="13" />
+                <line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+            </div>
+            <div class="guardrail-card-body">
+              <p class="guardrail-card-text">
+                <strong id="pii-banner-headline">Personal info detected.</strong>
+                LinguaCoach doesn't need personal data. You can send a redacted version or edit your message first.
+              </p>
+              <div id="pii-preview-box" class="pii-preview-box"></div>
+              <div class="guardrail-card-actions">
+                <button type="button" id="btn-send-redacted" class="btn btn-amber btn-xs">Send Redacted</button>
+                <button type="button" id="btn-edit-pii" class="btn btn-subtle btn-xs">Edit message</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Composer -->
+          <div class="composer-shell">
+            <div id="live-pii-hint" class="live-pii-hint" hidden>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+                <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+              <span id="live-pii-hint-text">Personal info detected in draft — you'll be offered one-click redaction before sending.</span>
+            </div>
+
+            <form id="chat-form" class="composer-form" novalidate>
+              <div class="composer-input-wrap">
+                <label for="chat-input" class="sr-only">Message LinguaCoach</label>
+                <textarea
+                  id="chat-input"
+                  class="composer-textarea"
+                  rows="1"
+                  placeholder="Type your message… (Enter to send, Shift+Enter for new line)"
+                  autocomplete="off"
+                ></textarea>
+              </div>
+
+              <div class="composer-toolbar">
+                <div class="composer-tools-left">
+                  <button
+                    type="button"
+                    id="btn-voice"
+                    class="btn btn-ghost btn-xs voice-btn"
+                    title="Browser speech-to-text (no pronunciation scoring)"
+                    aria-label="Browser speech-to-text (no pronunciation scoring)"
+                    hidden
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+                      <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                      <line x1="12" y1="19" x2="12" y2="23" />
+                      <line x1="8" y1="23" x2="16" y2="23" />
+                    </svg>
+                    <span id="voice-btn-label">Voice (STT)</span>
+                  </button>
+
+                  <button type="button" id="btn-export-chat" class="btn btn-ghost btn-xs" title="Download conversation transcript as Markdown">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="7 10 12 15 17 10" />
+                      <line x1="12" y1="15" x2="12" y2="3" />
+                    </svg>
+                    <span>Export Transcript</span>
+                  </button>
+                </div>
+
+                <div class="composer-tools-right">
+                  <button type="button" id="btn-stop" class="btn btn-danger-outline btn-sm" hidden>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <rect x="6" y="6" width="12" height="12" rx="2" />
+                    </svg>
+                    <span>Stop</span>
+                  </button>
+                  <button type="submit" id="btn-send" class="btn btn-primary btn-sm">
+                    <span>Send</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <line x1="22" y1="2" x2="11" y2="13" />
+                      <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </form>
+
+            <p class="composer-disclaimer">
+              Text-based practice only · No official proficiency score or pronunciation scoring · API key stays in your browser.
+            </p>
+          </div>
+        </section>
+
+        <!-- RIGHT COLUMN (~42%): LIVE STRUCTURED PRACTICE COMPANION -->
+        <aside class="companion-column" aria-label="Structured practice companion">
+          <!-- Mobile/Compact Filter Tabs (defaults to All stacked) -->
+          <div class="companion-filter" role="tablist" aria-label="Companion panel filter">
+            <button type="button" class="filter-pill is-active" data-companion-filter="all" role="tab" aria-selected="true">All Cards</button>
+            <button type="button" class="filter-pill" data-companion-filter="brief" role="tab" aria-selected="false">Brief</button>
+            <button type="button" class="filter-pill" data-companion-filter="feedback" role="tab" aria-selected="false">Feedback</button>
+            <button type="button" class="filter-pill" data-companion-filter="plan" role="tab" aria-selected="false">Plan &amp; RAG</button>
+          </div>
+
+          <!-- CARD 1: PRACTICE BRIEF -->
+          <section id="card-brief" class="card companion-card" data-companion-group="brief" aria-labelledby="heading-brief">
+            <header class="card-header">
+              <div class="card-header-title">
+                <span class="card-icon card-icon--navy" aria-hidden="true">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="16" y1="13" x2="8" y2="13" />
+                    <line x1="16" y1="17" x2="8" y2="17" />
+                  </svg>
+                </span>
+                <h2 id="heading-brief" class="card-title">Practice Brief</h2>
+              </div>
+              <span id="brief-status-pill" class="badge badge-neutral">Draft</span>
+            </header>
+
+            <div class="brief-grid">
+              <div class="field">
+                <label class="field-label" for="brief-language">Target language</label>
+                <input id="brief-language" class="field-input" type="text" list="language-options" placeholder="e.g., English, Spanish" />
+                <datalist id="language-options">
+                  <option value="English"></option>
+                  <option value="Spanish"></option>
+                  <option value="Mandarin"></option>
+                  <option value="Cantonese"></option>
+                  <option value="Japanese"></option>
+                  <option value="French"></option>
+                </datalist>
+              </div>
+
+              <div class="field">
+                <label class="field-label" for="brief-level">Self-rated level</label>
+                <select id="brief-level" class="field-input">
+                  <option value="">Select CEFR…</option>
+                  <option value="A2">A2 — Elementary</option>
+                  <option value="B1">B1 — Intermediate</option>
+                  <option value="B2">B2 — Upper-Intermediate</option>
+                  <option value="C1">C1 — Advanced</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label class="field-label" for="brief-time">Available time (min)</label>
+                <input id="brief-time" class="field-input" type="number" min="2" max="60" step="1" placeholder="10" />
+              </div>
+
+              <div class="field">
+                <label class="field-label" for="brief-focus">Feedback focus</label>
+                <input id="brief-focus" class="field-input" type="text" placeholder="e.g., Clarity &amp; linking" />
+              </div>
+
+              <div class="field field--full">
+                <label class="field-label" for="brief-goal">Speaking goal</label>
+                <input id="brief-goal" class="field-input" type="text" placeholder="e.g., 2-minute seminar self-introduction" />
+              </div>
+
+              <div class="field field--full">
+                <label class="field-label" for="brief-scenario">Scenario</label>
+                <input id="brief-scenario" class="field-input" type="text" placeholder="e.g., University seminar icebreaker" />
+              </div>
+            </div>
+
+            <div class="card-actions">
+              <button type="button" id="btn-start-roleplay" class="btn btn-teal btn-sm">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polygon points="5 3 19 12 5 21 5 3" />
+                </svg>
+                <span>Start role-play</span>
+              </button>
+              <button type="button" id="btn-pivot-5min" class="btn btn-outline btn-sm" title="Simulate a sudden time limit change to test plan adaptation">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
+                <span>5-min Q&amp;A Pivot</span>
+              </button>
+            </div>
+          </section>
+
+          <!-- CARD 2: ACTIONABLE FEEDBACK & RETRY -->
+          <section id="card-feedback" class="card companion-card" data-companion-group="feedback" aria-labelledby="heading-feedback">
+            <header class="card-header">
+              <div class="card-header-title">
+                <span class="card-icon card-icon--teal" aria-hidden="true">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                    <polyline points="22 4 12 14.01 9 11.01" />
+                  </svg>
+                </span>
+                <h2 id="heading-feedback" class="card-title">Actionable Feedback &amp; Retry</h2>
+              </div>
+              <span id="feedback-meta-pill" class="badge badge-neutral">Waiting</span>
+            </header>
+
+            <div id="feedback-empty" class="card-empty">
+              Complete a role-play turn to see structured feedback: <strong>2 strengths</strong>, <strong>2 priority fixes</strong>, and <strong>1 focused retry prompt</strong>.
+            </div>
+
+            <div id="feedback-content" class="feedback-content" hidden>
+              <!-- Strengths -->
+              <div class="feedback-block">
+                <h3 class="feedback-subheading feedback-subheading--teal">2 Strengths</h3>
+                <ul id="feedback-strengths" class="strength-list"></ul>
+              </div>
+
+              <!-- Priority Fixes -->
+              <div class="feedback-block">
+                <h3 class="feedback-subheading feedback-subheading--amber">2 Priority Fixes</h3>
+                <div id="feedback-fixes" class="fix-list"></div>
+              </div>
+
+              <!-- Retry Prompt -->
+              <div id="feedback-retry-box" class="retry-box">
+                <div class="retry-box-header">
+                  <span class="retry-box-label">1 Retry Prompt</span>
+                  <button type="button" id="btn-focus-retry" class="btn btn-teal btn-xs">
+                    Focus composer to retry
+                  </button>
+                </div>
+                <p id="feedback-retry-text" class="retry-box-text"></p>
+              </div>
+
+              <!-- Visible Assumptions & Limits -->
+              <details id="feedback-assumptions-details" class="assumptions-disclosure">
+                <summary class="assumptions-summary">Visible assumptions &amp; coach limits</summary>
+                <ul id="feedback-assumptions-list" class="assumptions-list"></ul>
+              </details>
+            </div>
+          </section>
+
+          <!-- CARD 3: REVISED PRACTICE PLAN (ADAPTATION) -->
+          <section id="card-plan" class="card companion-card companion-card--plan" data-companion-group="plan" aria-labelledby="heading-plan" hidden>
+            <header class="card-header">
+              <div class="card-header-title">
+                <span class="card-icon card-icon--amber" aria-hidden="true">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                    <line x1="16" y1="2" x2="16" y2="6" />
+                    <line x1="8" y1="2" x2="8" y2="6" />
+                    <line x1="3" y1="10" x2="21" y2="10" />
+                  </svg>
+                </span>
+                <h2 id="heading-plan" class="card-title">Revised Plan</h2>
+              </div>
+              <span id="plan-duration-pill" class="badge badge-amber">Adapted</span>
+            </header>
+
+            <p id="plan-note" class="plan-note" hidden></p>
+            <div class="plan-table-wrap">
+              <table class="plan-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Time</th>
+                    <th scope="col">Practice Block</th>
+                  </tr>
+                </thead>
+                <tbody id="plan-tbody"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- CARD 4: PROGRESS & RAG GROUNDING INSPECTOR -->
+          <section id="card-rag" class="card companion-card" data-companion-group="plan" aria-labelledby="heading-rag">
+            <header class="card-header">
+              <div class="card-header-title">
+                <span class="card-icon card-icon--navy" aria-hidden="true">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                  </svg>
+                </span>
+                <h2 id="heading-rag" class="card-title">Progress &amp; RAG Grounding</h2>
+              </div>
+              <span id="rag-count-pill" class="badge badge-neutral">0 rules</span>
+            </header>
+
+            <!-- Compact Progress Strip -->
+            <div class="progress-strip">
+              <div class="progress-stat">
+                <span class="progress-stat-label">Target phrases</span>
+                <span id="stat-phrases" class="progress-stat-val">0</span>
+              </div>
+              <div class="progress-stat">
+                <span class="progress-stat-label">Revisions</span>
+                <span id="stat-revisions" class="progress-stat-val">0</span>
+              </div>
+              <div class="progress-stat progress-stat--wide">
+                <span class="progress-stat-label">Next step</span>
+                <span id="stat-next-step" class="progress-stat-text">Set your speaking goal</span>
+              </div>
+            </div>
+
+            <div id="phrases-chips" class="phrases-chips" hidden></div>
+
+            <!-- RAG Inspector -->
+            <div class="rag-section">
+              <div class="rag-section-header">
+                <span class="rag-section-title">Retrieved Reference Rules</span>
+                <span class="rag-section-hint">Grounded in syllabus KB</span>
+              </div>
+              <div id="rag-list" class="rag-list">
+                <p class="rag-empty">No reference rules retrieved yet. Send a practice message or grammar question to inspect RAG matches.</p>
+              </div>
+            </div>
+          </section>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ========== VIEW 2: 7-CASE EVALUATION LAB ========== -->
+    <section id="view-eval" class="view-section" role="tabpanel" aria-labelledby="tab-eval" hidden>
+      <div class="eval-container">
+        <!-- Live vs Sandbox Banner -->
+        <div id="eval-mode-banner" class="eval-banner eval-banner--sandbox" role="status">
+          <div class="eval-banner-content">
+            <span class="eval-banner-dot" aria-hidden="true"></span>
+            <p id="eval-mode-banner-text">
+              <strong>Sandbox Preview</strong> — connect an API key in Settings to execute real LLM tests (simulated preview only; do not report as live LLM results).
+            </p>
+          </div>
+          <button type="button" id="btn-eval-open-settings" class="btn btn-amber btn-xs">Configure API Key</button>
+        </div>
+
+        <!-- Evaluation Controls & Metrics -->
+        <div class="card eval-header-card">
+          <div class="eval-header-top">
+            <div>
+              <h1 class="eval-title">7-Case CCC8015 Evaluation Lab</h1>
+              <p class="eval-subtitle">
+                Run all seven stress-test scenarios sequentially against the active prompt, PII scanner, and RAG grounding pipeline. Verify automated checks and add manual reviewer verdicts before exporting your report.
+              </p>
+            </div>
+            <div class="eval-actions">
+              <button type="button" id="btn-run-all-eval" class="btn btn-primary btn-sm">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polygon points="5 3 19 12 5 21 5 3" />
+                </svg>
+                <span>Run All 7 Cases</span>
+              </button>
+              <button type="button" id="btn-stop-eval" class="btn btn-danger-outline btn-sm" hidden>Stop Run</button>
+              <button type="button" id="btn-export-eval-md" class="btn btn-outline btn-sm">Export Markdown Report</button>
+              <button type="button" id="btn-export-eval-json" class="btn btn-outline btn-sm">Export JSON</button>
+              <button type="button" id="btn-reset-eval" class="btn btn-ghost btn-sm">Reset</button>
+            </div>
+          </div>
+
+          <div class="eval-metrics">
+            <div class="metric-tile">
+              <span class="metric-label">Total Cases</span>
+              <span id="eval-metric-total" class="metric-value">7</span>
+            </div>
+            <div class="metric-tile metric-tile--teal">
+              <span class="metric-label">Auto Pass</span>
+              <span id="eval-metric-pass" class="metric-value">0</span>
+            </div>
+            <div class="metric-tile metric-tile--amber">
+              <span class="metric-label">Auto Warn</span>
+              <span id="eval-metric-warn" class="metric-value">0</span>
+            </div>
+            <div class="metric-tile metric-tile--danger">
+              <span class="metric-label">Auto Fail</span>
+              <span id="eval-metric-fail" class="metric-value">0</span>
+            </div>
+            <div class="metric-tile">
+              <span class="metric-label">Reviewer Verified</span>
+              <span id="eval-metric-reviewed" class="metric-value">0 / 7</span>
+            </div>
+          </div>
+
+          <div id="eval-progress" class="eval-progress" hidden>
+            <div class="eval-progress-meta">
+              <span id="eval-progress-label">Running case 1 of 7…</span>
+              <span id="eval-progress-pct">0%</span>
+            </div>
+            <div class="eval-progress-track">
+              <div id="eval-progress-fill" class="eval-progress-fill" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 7 Cases Table / Accordion List -->
+        <div id="eval-cases-list" class="eval-cases-list" aria-label="Evaluation test cases">
+          <!-- Populated dynamically from LC.Tests.CASES -->
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="app-footer" role="contentinfo">
+    <div class="footer-inner">
+      <span>CCC8015 · Topic 1 · LinguaCoach Prototype</span>
+      <span class="footer-sep" aria-hidden="true">·</span>
+      <span>Client-side BYOK (No server storage)</span>
+      <span class="footer-sep" aria-hidden="true">·</span>
+      <span>Practice partner, not an assessor.</span>
+    </div>
+  </footer>
+
+  <!-- ==================== MODAL 1: BYOK API KEY SETTINGS ==================== -->
+  <div id="modal-settings" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modal-settings-title" hidden>
+    <div class="modal-dialog modal-dialog--md">
+      <header class="modal-header">
+        <div>
+          <h2 id="modal-settings-title" class="modal-title">API Key &amp; Provider Settings</h2>
+          <p class="modal-subtitle">Connect your own LLM provider directly from this browser (BYOK).</p>
+        </div>
+        <button type="button" class="modal-close" data-close-modal="modal-settings" aria-label="Close settings modal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </header>
+
+      <div class="modal-body">
+        <!-- Privacy Callout -->
+        <div class="privacy-callout">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
+          <div>
+            <strong>Bring Your Own API Key</strong> — Your key never leaves your browser except in direct HTTPS requests to your chosen provider. No backend server sees or stores it.
+          </div>
+        </div>
+
+        <!-- Provider Grid -->
+        <div class="form-group">
+          <label class="field-label">Choose Provider</label>
+          <div id="provider-grid" class="provider-grid" role="radiogroup" aria-label="LLM provider">
+            <!-- Populated from LC.LLM.PROVIDERS -->
+          </div>
+        </div>
+
+        <!-- API Key Input -->
+        <div class="form-group">
+          <div class="field-label-row">
+            <label class="field-label" for="input-api-key">API Key</label>
+            <a id="provider-key-link" class="inline-link" href="https://platform.deepseek.com/api_keys" target="_blank" rel="noopener noreferrer">
+              Get an API key ↗
+            </a>
+          </div>
+          <div class="input-with-addon">
+            <input
+              id="input-api-key"
+              class="field-input field-input--mono"
+              type="password"
+              placeholder="sk-…"
+              autocomplete="off"
+              spellcheck="false"
+            />
+            <button type="button" id="btn-toggle-key" class="input-addon-btn" aria-label="Show API key" title="Show / hide API key">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+            </button>
+          </div>
+          <p id="provider-hint" class="field-hint"></p>
+        </div>
+
+        <!-- Model & Base URL -->
+        <div class="settings-two-col">
+          <div class="form-group">
+            <label class="field-label" for="select-model">Recommended Model</label>
+            <select id="select-model" class="field-input"></select>
+          </div>
+          <div class="form-group">
+            <label class="field-label" for="input-custom-model">Model ID (override)</label>
+            <input id="input-custom-model" class="field-input field-input--mono" type="text" placeholder="e.g., deepseek-chat" spellcheck="false" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="field-label-row">
+            <label class="field-label" for="input-base-url">API Base URL</label>
+            <button type="button" id="btn-reset-base-url" class="link-btn">Reset to provider default</button>
+          </div>
+          <input id="input-base-url" class="field-input field-input--mono" type="url" placeholder="https://api.deepseek.com" spellcheck="false" />
+        </div>
+
+        <!-- Storage Consent Checkbox (unchecked by default) -->
+        <label class="checkbox-row" for="check-remember-key">
+          <input type="checkbox" id="check-remember-key" />
+          <span>Remember API key in this browser (<code>localStorage</code>); otherwise keep for this tab session only.</span>
+        </label>
+
+        <!-- Test Connection Output -->
+        <div id="test-connection-result" class="connection-result" role="status" aria-live="polite" hidden></div>
+      </div>
+
+      <footer class="modal-footer modal-footer--spread">
+        <button type="button" id="btn-clear-key" class="btn btn-danger-ghost btn-sm">Clear Key (Return to Sandbox)</button>
+        <div class="modal-footer-right">
+          <button type="button" id="btn-test-connection" class="btn btn-outline btn-sm">Test Connection</button>
+          <button type="button" id="btn-save-settings" class="btn btn-primary btn-sm">Save &amp; Use Live API</button>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 2: PROMPT, GUARDRAILS & KB INSPECTOR ==================== -->
+  <div id="modal-inspector" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modal-inspector-title" hidden>
+    <div class="modal-dialog modal-dialog--lg">
+      <header class="modal-header">
+        <div>
+          <h2 id="modal-inspector-title" class="modal-title">Prompt, Guardrails &amp; Reference KB</h2>
+          <p class="modal-subtitle">Full transparency into LinguaCoach's system instructions, safety boundaries, and RAG syllabus database.</p>
+        </div>
+        <button type="button" class="modal-close" data-close-modal="modal-inspector" aria-label="Close inspector modal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </header>
+
+      <div class="modal-tabs" role="tablist" aria-label="Inspector sections">
+        <button type="button" class="modal-tab is-active" data-inspector-tab="prompt" role="tab" aria-selected="true">System Prompt</button>
+        <button type="button" class="modal-tab" data-inspector-tab="guardrails" role="tab" aria-selected="false">Guardrails &amp; Non-Goals</button>
+        <button type="button" class="modal-tab" data-inspector-tab="kb" role="tab" aria-selected="false">
+          Knowledge Base <span id="inspector-kb-count" class="tab-badge">0</span>
+        </button>
+      </div>
+
+      <div class="modal-body modal-body--scroll">
+        <!-- Tab 1: System Prompt -->
+        <div id="inspector-panel-prompt" class="inspector-panel is-active">
+          <div class="inspector-toolbar">
+            <div class="segmented-sm" role="group" aria-label="Prompt view mode">
+              <button type="button" id="btn-prompt-core" class="seg-btn is-active">Core System Prompt</button>
+              <button type="button" id="btn-prompt-live" class="seg-btn">Assembled Live Prompt</button>
+            </div>
+            <button type="button" id="btn-copy-prompt" class="btn btn-outline btn-xs">Copy Prompt</button>
+          </div>
+          <pre id="inspector-prompt-code" class="code-block"></pre>
+        </div>
+
+        <!-- Tab 2: Guardrails & Non-Goals -->
+        <div id="inspector-panel-guardrails" class="inspector-panel" hidden>
+          <div class="nongoals-box">
+            <h3 class="inspector-subheading">Explicit Non-Goals (Scope Boundaries)</h3>
+            <ul class="nongoals-list">
+              <li><strong>Not an official proficiency test:</strong> Does not issue CEFR grades, IELTS/DELE scores, or formal assessments.</li>
+              <li><strong>No pronunciation or accent scoring:</strong> Text-based practice only (browser speech-to-text is transcription only).</li>
+              <li><strong>Not a ghostwriter:</strong> Refuses to write graded essays, scripts, or assignments for students.</li>
+              <li><strong>Not a counsellor or clinician:</strong> Steps back with supportive guidance if emotional distress is detected.</li>
+            </ul>
+          </div>
+
+          <h3 class="inspector-subheading">6 Active Design Guardrails</h3>
+          <div class="table-scroll">
+            <table class="guardrails-table">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Guardrail</th>
+                  <th scope="col">Trigger / Risk</th>
+                  <th scope="col">Enforced Behaviour</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="mono">G1</td>
+                  <td><strong>No Guessing Constraints</strong></td>
+                  <td>Vague request (missing language, level, or scenario)</td>
+                  <td>Asks targeted clarifying questions before confirming a Practice Brief or starting role-play.</td>
+                </tr>
+                <tr>
+                  <td class="mono">G2</td>
+                  <td><strong>Academic Integrity</strong></td>
+                  <td>“Write my essay / graded assignment”</td>
+                  <td>Refuses ghostwriting calmly and pivots to outline rehearsal or oral Q&amp;A practice.</td>
+                </tr>
+                <tr>
+                  <td class="mono">G3</td>
+                  <td><strong>Privacy &amp; PII Protection</strong></td>
+                  <td>Student ID, email, phone, address, or HKID detected</td>
+                  <td>Client-side PII scanner intercepts pre-send, offers one-click redaction, and never sends keys/logs to any third-party server.</td>
+                </tr>
+                <tr>
+                  <td class="mono">G4</td>
+                  <td><strong>RAG-Grounded Corrections</strong></td>
+                  <td>Grammar errors or complex linguistic questions</td>
+                  <td>Retrieves CEFR/syllabus rules from the verified KB; instructs model to state assumptions and invite textbook verification.</td>
+                </tr>
+                <tr>
+                  <td class="mono">G5</td>
+                  <td><strong>Empathy &amp; Dialect Respect</strong></td>
+                  <td>Harsh nitpicking or regional variation (e.g., LatAm vs. Castilian)</td>
+                  <td>Limits feedback to 2 strengths + 2 priority communicative fixes + 1 retry; accepts valid regional dialects.</td>
+                </tr>
+                <tr>
+                  <td class="mono">G6</td>
+                  <td><strong>Wellbeing &amp; Distress Handoff</strong></td>
+                  <td>Signals of severe anxiety, hopelessness, or self-harm</td>
+                  <td>Pauses language coaching, displays calm support guidance to human/campus services, and offers Pause &amp; Reset.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Tab 3: Reference Knowledge Base -->
+        <div id="inspector-panel-kb" class="inspector-panel" hidden>
+          <div class="kb-controls">
+            <input id="kb-search" class="field-input" type="search" placeholder="Search rules, tags, topics, or citations…" aria-label="Search knowledge base" />
+            <div id="kb-lang-filters" class="kb-lang-filters" role="group" aria-label="Filter knowledge base by language"></div>
+          </div>
+          <div id="inspector-kb-list" class="kb-list"></div>
+        </div>
+      </div>
+
+      <footer class="modal-footer">
+        <button type="button" class="btn btn-primary btn-sm" data-close-modal="modal-inspector">Done</button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- ==================== TOAST NOTIFICATIONS ==================== -->
+  <div id="toast-region" class="toast-region" aria-live="polite" aria-atomic="true"></div>
+</body>
+</html>
